@@ -1,8 +1,16 @@
 import json
+from locale import currency
 from pkgutil import get_data
+from sysconfig import get_path
 from typing import Dict, Any
 
-from src.utils import get_time_for_greeting, get_data_time
+from src.utils import (
+    get_time_for_greeting,
+    get_data_time,
+    get_path_and_period,
+    get_card_with_spend,
+    get_top_transactions,
+    get_currency)
 
 
 def main_info(date_time: str) -> Dict[str, Any]:
@@ -11,13 +19,29 @@ def main_info(date_time: str) -> Dict[str, Any]:
         в формате YYYY-MM-DD HH:MM:SS и возвращает JSON-ответ
         2018-05-20 15:30:00
     """
-
-    greeting = get_time_for_greeting() # Определяет текущее время пользователя и выдает какое сейчас время
+# Делаем срез всего экеля на определенный диапазон
     time_period = get_data_time(date_time)
-    print(time_period)
+    sorted_df = get_path_and_period("../data/operations.xlsx", time_period)
+
+# 1. Приветствие
+    greeting = get_time_for_greeting() # Определяет текущее время пользователя и выдает какое сейчас время
+
+# 2. По каждой карте
+    cards = get_card_with_spend(sorted_df)
+
+# 3. Топ-5 транзакций по сумме платежа
+    top_transactions = get_top_transactions(sorted_df, 5)
+
+# 4. Курс валют
+    currency_rates = get_currency("../data/user_settings.json")
+
+
 
     data = {
-        "greeting": greeting
+        "greeting": greeting,
+        "card": cards,
+        "top_transactions": top_transactions,
+        "currency_rates": currency_rates
     }
 
     json_data = json.dumps(data, ensure_ascii=False, indent=4)
