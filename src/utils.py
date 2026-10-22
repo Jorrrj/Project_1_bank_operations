@@ -1,13 +1,16 @@
 import json
+import os
 from datetime import  datetime
 import pandas as pd
 import requests
 import top
 from pandas import DataFrame
+from dotenv import load_dotenv
+import finnhub
 
-
+load_dotenv()
 URL = "https://api.apilayer.com/exchangerates_data/convert"
-API_KEY = "saDcXzogOziOq5FsQHB8fWmq85CtkcFH"
+API_KEY = os.getenv("API_KEY")
 
 
 def get_time_for_greeting():
@@ -140,6 +143,20 @@ def get_currency(path_to_json: str) -> list[dict]:
                 })
 
         return currency_rates
+
+
+def get_stock(path_to_json: str) -> list[dict]:
+    stock_rates = []
+    finnhub_client = finnhub.Client(api_key=os.getenv("API_KEY_2"))
+
+    with open(path_to_json, "r", encoding="utf-8") as file:
+        data = json.load(file)
+        stocks = data['user_stocks']
+
+        for stock in stocks:
+            price = finnhub_client.quote(stock)
+            stock_rates.append({'stock': stock, 'price': round(price["c"], 2)})
+    return stock_rates
 
 
 

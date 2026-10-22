@@ -10,7 +10,8 @@ from src.utils import (
     get_path_and_period,
     get_card_with_spend,
     get_top_transactions,
-    get_currency)
+    get_currency,
+    get_stock)
 
 
 def main_info(date_time: str) -> Dict[str, Any]:
@@ -19,7 +20,7 @@ def main_info(date_time: str) -> Dict[str, Any]:
         в формате YYYY-MM-DD HH:MM:SS и возвращает JSON-ответ
         2018-05-20 15:30:00
     """
-# Делаем срез всего экеля на определенный диапазон
+# Делаем срез всего экселя на определенный диапазон
     time_period = get_data_time(date_time)
     sorted_df = get_path_and_period("../data/operations.xlsx", time_period)
 
@@ -35,13 +36,17 @@ def main_info(date_time: str) -> Dict[str, Any]:
 # 4. Курс валют
     currency_rates = get_currency("../data/user_settings.json")
 
+# 5. Стоимость акций из S&P500
+    stock_prices = get_stock("../data/user_settings.json")
+
 
 
     data = {
         "greeting": greeting,
         "card": cards,
         "top_transactions": top_transactions,
-        "currency_rates": currency_rates
+        "currency_rates": currency_rates,
+        "stock_prices": stock_prices
     }
 
     json_data = json.dumps(data, ensure_ascii=False, indent=4)
