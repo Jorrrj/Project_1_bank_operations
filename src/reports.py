@@ -1,13 +1,12 @@
 from datetime import datetime
 
 import pandas as pd
-from tabulate import tabulate
 
 
-def spending_by_category(path_fo_file: str, category: str, date: str=None) -> dict:
+def spending_by_category(path_fo_file: str, category: str, date: str = None) -> dict:
     """
-        Функция возвращает траты по заданной категории за
-        последние три месяца (от переданной даты)
+    Функция возвращает траты по заданной категории за
+    последние три месяца (от переданной даты)
     """
 
     df = pd.read_excel(path_fo_file)
@@ -32,4 +31,4 @@ def spending_by_category(path_fo_file: str, category: str, date: str=None) -> di
     df["Дата платежа"] = pd.to_datetime(df["Дата платежа"], dayfirst=True)
     transaction = df.loc[start_day <= df["Дата платежа"]].loc[df["Дата платежа"] <= date]
     transaction = transaction[transaction["Категория"] == category]
-    return tabulate(transaction, headers='keys', tablefmt='grid', showindex=False)
+    return transaction
